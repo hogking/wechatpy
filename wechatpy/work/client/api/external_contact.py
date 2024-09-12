@@ -98,7 +98,7 @@ class WeChatExternalContact(BaseWeChatAPI):
         """
         return self._get("externalcontact/list", params={"userid": userid})
 
-    def batch_get_by_user(self, userid: str, cursor: str = "", limit: int = 50) -> dict:
+    def batch_get_by_user(self, userid_list: List[str], cursor: str = "", limit: int = 50) -> dict:
         """
         批量获取客户详情
 
@@ -113,7 +113,7 @@ class WeChatExternalContact(BaseWeChatAPI):
             # 批量获取该企业员工添加的客户(外部联系人)的详情
             external_contact_list = client.external_contact.batch_get_by_user("user_id", "cursor", 10)["external_contact_list"]
 
-        :param userid: 企业成员的userid
+        :param userid_list: 企业成员的userid列表
         :param cursor: 用于分页查询的游标，字符串类型，由上一次调用返回，首次调用可不填
         :param limit: 返回的最大记录数，整型，最大值100，默认值50，超过最大值时取最大值
         :return: 包含该企业员工添加的部分客户详情列表的字典类型数据
@@ -129,7 +129,7 @@ class WeChatExternalContact(BaseWeChatAPI):
         .. _批量获取客户详情: https://work.weixin.qq.com/api/doc/90000/90135/92994
         """
         data = optionaldict(
-            userid=userid,
+            userid_list=userid_list,
             cursor=cursor,
             limit=limit,
         )
@@ -1102,7 +1102,7 @@ class WeChatExternalContact(BaseWeChatAPI):
         data = optionaldict(status_filter=status_filter, owner_filter=owner_filter, cursor=cursor, limit=limit)
         return self._post("externalcontact/groupchat/list", data=data)
 
-    def get_group_chat_info(self, chat_id: str) -> dict:
+    def get_group_chat_info(self, chat_id: str, need_name: int = 0) -> dict:
         """
         获取客户群详情
 
@@ -1115,6 +1115,7 @@ class WeChatExternalContact(BaseWeChatAPI):
         详细请查阅企业微信官方文档 `获取客户群详情`_ 章节。
 
         :param chat_id: 客户群ID
+        :param need_name: 是否需要返回群成员的名字，0：否，1：是
         :return: 响应数据
 
         .. note::
@@ -1127,7 +1128,7 @@ class WeChatExternalContact(BaseWeChatAPI):
 
         .. _获取客户群详情: https://work.weixin.qq.com/api/doc/90000/90135/92122
         """
-        data = optionaldict(chat_id=chat_id)
+        data = optionaldict(chat_id=chat_id, need_name=need_name)
         return self._post("externalcontact/groupchat/get", data=data)
 
     def add_group_welcome_template(self, template: dict, agentid: Optional[int] = None) -> dict:
